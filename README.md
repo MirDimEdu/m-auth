@@ -22,7 +22,7 @@ Micro-service for user authentication.
             pip3 install -r requirements.txt
 
 
-## Installing
+## Running
 
 1.  Service takes its settings through environment variables, so copy `setup.sh` from repo and fill it your data
 
