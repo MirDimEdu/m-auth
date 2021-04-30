@@ -1,16 +1,22 @@
 #!/bin/bash
 
 # Token secret Key for decoding/encoding
-export TOKEN_SECRET_KEY=
+export TOKEN_SECRET_KEY=''
 # Token name
-export AUTH_TOKEN_NAME=
+export AUTH_TOKEN_NAME=''
 
 # Service host
-export HOST=
+export HOST=''
 # Service port
-export PORT=
+export PORT=''
 
-# Users micro-service host
-export M_USERS_HOST=
-# Users micro-service port
-export M_USERS_PORT=
+# Auth Postgres db
+export PGDATABASE=''
+# Auth Postgres user
+export PGUSER=''
+# Auth Postgres host
+export PGHOST=''
+# Auth Postgres port
+export PGPORT=''
+# Auth Postgres user password
+export PGPASSWORD=''

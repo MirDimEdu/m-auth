@@ -1,9 +1,9 @@
 import uuid
-import httpx
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
-from fastapi.responses import JSONResponse
 
+from .db import sessions
+from .db import _database
 from .config import cfg
 from . import schemas
 from .errors import HTTPabort
@@ -16,21 +16,36 @@ async def check_auth(token):
     try:
         payload = jwt.decode(token.data, cfg.TOKEN_SECRET_KEY, algorithms=['HS256'])
         user_id: int = payload.get('user_id')
-        token_id = uuid.UUID(payload.get('token_id'))
+        role: str = payload.get('role')
+        session_id = uuid.UUID(payload.get('session_id'))
         expire_time = datetime.fromisoformat(payload.get('expire'))
     except:
         HTTPabort(401, 'Incorrect token data')
 
     if expire_time < datetime.utcnow():
-        async with httpx.AsyncClient() as ac:
-            json = {'t_id': token_id}
-            answer = await ac.delete(f'{cfg.MU_ADDR}/auth/delete_token', json=json)
-            HTTPabort(401, 'Token too old')
+        query = sessions.delete().where(sessions.c.id == session_id)
+        await _database.execute(query)
+        HTTPabort(401, 'Token too old')
 
-    async with httpx.AsyncClient() as ac:
-        json={'user_id': user_id, 'token_id': token_id}  
-        answer = await ac.post(f'{cfg.MU_ADDR}/auth/me', json=json)
+    query = select(sessions).where(sessions.c.id == session_id)
+    cu = await _database.fetch_one(query)
+    if not cu:
+        HTTPabort(401, 'Unauthorized')
 
-        if answer.status_code != 200:
-            HTTPabort(401, 'Unauthorized')
-        return schemas.CurrentUser(**answer.json())
+
+async def new_session(session):
+    query = sessions.insert().values(id=session.session_id,
+                                     user_id=session.user_id,
+                                     client=session.client,
+                                     login_time=datetime.utcnow())
+    await _database.execute(query)
+
+
+async def delete_session(session):
+    query = sessions.delete().where(sessions.c.id == session.session_id)
+    await _database.execute(query)
+
+
+async def delete_other_sessions(session):
+    query = sessions.delete().where(sessions.c.user_id == session.user_id).where(sessions.c.id != session.session_id)
+    await _database.execute(query)

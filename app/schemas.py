@@ -6,7 +6,7 @@ class Token(BaseModel):
     data: str
 
 
-class CurrentUser(BaseModel):
+class Session(BaseModel):
+    session: str
     user_id: int
-    login: str
-    role: str
+    client: str
