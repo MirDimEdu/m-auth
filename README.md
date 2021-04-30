@@ -1,6 +1,6 @@
 # Auth Management Micro-service
 
-Micro-service for management account and auth.
+Micro-service for auth session management.
 
 
 ## Installing
