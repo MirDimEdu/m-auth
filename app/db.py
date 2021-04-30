@@ -10,7 +10,6 @@ from datetime import datetime
 from .config import cfg
 
 
-print(cfg.DB_CONNECTION_STRING)
 _database = databases.Database(cfg.DB_CONNECTION_STRING) #, ssl=True)
 _engine = create_engine(cfg.DB_CONNECTION_STRING)
 _metadata = MetaData()
