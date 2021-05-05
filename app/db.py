@@ -17,7 +17,7 @@ _metadata = MetaData()
 
 sessions = Table('sessions', _metadata,
     Column('id', UUID, default=uuid.uuid4, primary_key=True),
-    Column('user_id', Integer, nullable=False),
+    Column('account_id', Integer, nullable=False),
     Column('client', String, nullable=False),
     Column('login_time', DateTime, default=datetime.utcnow, nullable=False)
 )

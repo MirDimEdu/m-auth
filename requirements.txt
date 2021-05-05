@@ -2,6 +2,7 @@ aiopg
 asyncpg
 databases[postgresql]
 fastapi
+httpx
 psycopg2
 python-jose[cryptography]
 requests
