@@ -22,6 +22,7 @@ async def auth_required(request: Request):
         role: str = payload.get('role')
         session_id = uuid.UUID(payload.get('session_id'))
         login_time = datetime.fromisoformat(payload.get('login_time'))
+        client = payload.get('client')
     except:
         HTTPabort(401, 'Incorrect token data')
 
@@ -44,11 +45,11 @@ async def authenticate_user(login, password):
             'login': login,
             'password': password
         }
-        answer = await ac.post(f'{cfg.MU_ADDR}/verify_account', json=json)
+        answer = await ac.post(f'{cfg.MA_ADDR}/verify_account', json=json)
 
         if answer.status_code != 200:
             HTTPabort(answer.status_code, answer.json()['content'])
-        account_id = answer.json()['id']
+        account_id = answer.json()['account_id']
         role = answer.json()['role']
 
 
@@ -63,6 +64,7 @@ async def authenticate_user(login, password):
         'account_id': account_id,
         'role': role,
         'session_id': str(session_id),
+        'client': 'web',
         'login_time': datetime.utcnow().isoformat()
     }
 
@@ -80,7 +82,7 @@ async def close_other_sessions(current_user, password):
             'account_id': current_user.account_id,
             'password': password
         }
-        answer = await ac.post(f'{cfg.MU_ADDR}/verify_account', json=json)
+        answer = await ac.post(f'{cfg.MA_ADDR}/verify_account', json=json)
 
         if answer.status_code != 200:
             HTTPabort(answer.status_code, answer.json()['content'])

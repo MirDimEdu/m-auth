@@ -1,3 +1,4 @@
+aiofile
 aiopg
 asyncpg
 databases[postgresql]
@@ -5,6 +6,7 @@ fastapi
 httpx
 psycopg2
 python-jose[cryptography]
+pyyaml
 requests
 SQLAlchemy
 uvicorn

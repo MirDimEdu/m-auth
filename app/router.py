@@ -34,8 +34,8 @@ async def is_auth(current_user = Depends(logic.auth_required)):
 # external routes for manage sessions
 
 @router.post('/login')
-async def login(current_user = Depends(logic.auth_required),
-                user: schemas.LoginUser):
+async def login(user: schemas.LoginUser,
+                current_user = Depends(logic.auth_required)):
     if current_user.is_auth:
         HTTPanswer(409, 'User already logged-in')
     token = await logic.authenticate_user(user.login, user.password)
@@ -49,8 +49,8 @@ async def logout(current_user = Depends(logic.auth_required)):
 
 
 @router.post('/close_other_sessions')
-async def close_other_sessions(current_user = Depends(logic.auth_required),
-                               password: schemas.Password):
+async def close_other_sessions(password: schemas.Password,
+                               current_user = Depends(logic.auth_required)):
     await logic.close_other_sessions(current_user, password.password)
     return HTTPanswer(200, 'Closed all other sessions')
 
@@ -67,3 +67,14 @@ async def delete_other_sessions(session: schemas.Session):
 async def delete_all_sessions(session: schemas.Session):
     await logic.delete_sessions(session)
     return HTTPanswer(200, 'Deleted')
+
+
+
+
+
+
+
+
+@router.get('/test')
+async def test():
+    return HTTPanswer(200, cfg.TEST_DATA)
