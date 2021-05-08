@@ -26,7 +26,7 @@ def HTTPanswer(status_code, description, action_cookie=None, token=None):
 
 # external general rout to check auth
 
-@router.post('/is_auth')
+@router.get('/is_auth')
 async def is_auth(current_user = Depends(logic.auth_required)):
     return HTTPanswer(200, 'Auth OK')
 
@@ -67,14 +67,3 @@ async def delete_other_sessions(session: schemas.Session):
 async def delete_all_sessions(session: schemas.Session):
     await logic.delete_sessions(session)
     return HTTPanswer(200, 'Deleted')
-
-
-
-
-
-
-
-
-@router.get('/test')
-async def test():
-    return HTTPanswer(200, cfg.TEST_DATA)
