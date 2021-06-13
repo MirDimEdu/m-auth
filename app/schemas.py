@@ -1,17 +1,18 @@
 from pydantic import BaseModel
 
 
-class CurrentUser():
+class CurrentUser:
     is_auth = False
     
     def __init__(self, db_info = None, role=None):
         if db_info:
             self.is_auth = True
-            setattr(self, 'session_id', db_info['id'])
-            setattr(self, 'role', role)
-            setattr(self, 'account_id', db_info['account_id'])
-            setattr(self, 'client', db_info['client'])
-            setattr(self, 'login_time', db_info['login_time'])
+            self.session_id = db_info['id']
+            self.role = role
+            self.account_id = db_info['account_id']
+            self.client = db_info['client']
+            self.login_time = db_info['login_time']
+
     
     def jsonify(self):
         return {
@@ -23,7 +24,7 @@ class CurrentUser():
         }
 
 
-class LoginUser(BaseModel):
+class AuthCredentials(BaseModel):
     login: str
     password: str
 

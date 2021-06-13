@@ -16,10 +16,10 @@ def HTTPanswer(status_code, description, action_cookie=None, token=None):
         content={'content': description},
     )
     if action_cookie == 'set':
-        response.set_cookie(key=cfg.AUTH_TOKEN_NAME, value=token, path='/',
+        response.set_cookie(key=cfg.TOKEN_NAME, value=token, path='/',
                             domain=cfg.DOMAIN, httponly=True, samesite=None)
     if action_cookie == 'delete':
-        response.delete_cookie(cfg.AUTH_TOKEN_NAME, path='/', domain=cfg.DOMAIN)
+        response.delete_cookie(cfg.TOKEN_NAME, path='/', domain=cfg.DOMAIN)
 
     return response
 
@@ -34,7 +34,7 @@ async def is_auth(current_user = Depends(logic.auth_required)):
 # external routes for manage sessions
 
 @router.post('/login')
-async def login(user: schemas.LoginUser,
+async def login(user: schemas.AuthCredentials,
                 current_user = Depends(logic.auth_required)):
     if current_user.is_auth:
         HTTPanswer(409, 'User already logged-in')

@@ -1,0 +1,18 @@
+domain: localhost
+
+database:
+    host: 127.0.0.1
+    port: 5432
+    user: mauth
+    password: 123mauth
+    database: mauth
+
+security:
+    token_secret_key: X-MIRDIMEDU-KEY
+    token_name: X-MIRDIMEDU-Token
+    expire_time: 183
+
+
+m_accoutns:
+    host: 127.0.0.1
+    port: 8002

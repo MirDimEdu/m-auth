@@ -12,7 +12,7 @@ from .errors import HTTPabort
 
 
 async def auth_required(request: Request):
-    token = request.cookies.get(cfg.AUTH_TOKEN_NAME)
+    token = request.cookies.get(cfg.TOKEN_NAME)
     if not token:
         HTTPabort(401, 'Incorrect token name')
 
@@ -45,7 +45,7 @@ async def authenticate_user(login, password):
             'login': login,
             'password': password
         }
-        answer = await ac.post(f'{cfg.MA_ADDR}/verify_account', json=json)
+        answer = await ac.post(f'{cfg.M_ACCOUNTS_ADDRESS}/verify_account', json=json)
 
         if answer.status_code != 200:
             HTTPabort(answer.status_code, answer.json()['content'])
@@ -68,7 +68,7 @@ async def authenticate_user(login, password):
         'login_time': datetime.utcnow().isoformat()
     }
 
-    return jwt.encode(jwt_account_data, cfg.SECRET_KEY, algorithm='HS256')
+    return jwt.encode(jwt_account_data, cfg.TOKEN_SECRET_KEY, algorithm='HS256')
 
 
 async def logout_user(session_id):
@@ -82,7 +82,7 @@ async def close_other_sessions(current_user, password):
             'account_id': current_user.account_id,
             'password': password
         }
-        answer = await ac.post(f'{cfg.MA_ADDR}/verify_account', json=json)
+        answer = await ac.post(f'{cfg.M_ACCOUNTS_ADDRESS}/verify_account', json=json)
 
         if answer.status_code != 200:
             HTTPabort(answer.status_code, answer.json()['content'])
