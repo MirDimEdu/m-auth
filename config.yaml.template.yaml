@@ -1,0 +1,18 @@
+domain: 
+
+database:
+    host: 
+    port: 
+    user: 
+    password: 
+    database: 
+
+security:
+    token_secret_key: 
+    token_name: 
+    expire_time: 
+
+
+m_accoutns:
+    host: 
+    port: 
