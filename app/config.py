@@ -1,22 +1,49 @@
 import os
+import asyncio
+import yaml
+from aiofile import async_open
 from types import SimpleNamespace
+
+
+class YamlConfigManager:
+    def __init__(self, interval):
+        self._update_interval = interval
+        self._config_file = 'config.yaml'
+
+
+    async def _update_loop(self, config):
+        while True:
+            try:
+                await self._update(config)
+            except Exception as e:
+                print(f'Failed to update config, see you next time \n{repr(e)}')
+            await asyncio.sleep(self._update_interval)
+
+
+    async def _update(self, config):
+        async with async_open(self._config_file, 'r') as f:
+            data = yaml.safe_load(await f.read())
+
+            config.DOMAIN = data['domain']
+
+            database = data['database']
+            config.DB_CONNECTION_STRING = f"postgresql://{database['user']}:{database['password']}@{database['host']}:{database['port']}/{database['database']}"
+
+            security = data['security']
+            config.TOKEN_SECRET_KEY = security['token_secret_key']
+            config.TOKEN_NAME = security['token_name']
+            config.TOKEN_EXPIRE_TIME = security['expire_time']
+
+            m_accoutns = data['m_accoutns']
+            config.M_ACCOUNTS_ADDRESS = f"http://{m_accoutns['host']}:{m_accoutns['port']}"
+
+
+    async def start(self, config):
+        self._update_task = asyncio.ensure_future(self._update_loop(config))
+        await self._update(config)
 
 
 cfg = SimpleNamespace()
 
 
-def _get_db_connection_string():
-    db_connection_string = os.getenv('DB_CONNECTION_STRING')
-    if db_connection_string:
-        return db_connection_string
-    return 'postgresql://{PGUSER}:{PGPASSWORD}@{PGHOST}:{PGPORT}/{PGDATABASE}'.format(**os.environ)
-
-
-cfg.TOKEN_SECRET_KEY = os.getenv('TOKEN_SECRET_KEY', 'X-MIRDIMEDU-KEY')
-cfg.AUTH_TOKEN_NAME = os.getenv('AUTH_TOKEN_NAME', 'X-MIRDIMEDU-Token')
-
-cfg.HOST = os.getenv('AUTH_HOST', '0.0.0.0')
-cfg.PORT = int(os.getenv('AUTH_PORT', '8000'))
-
-cfg.DB_CONNECTION_STRING = _get_db_connection_string()
 cfg.STARTUP_DB_ACTION = False
